@@ -19,7 +19,15 @@ jobs:
         go-version: 1.17
 
     - name: Build
-      run: go build main.go -o build/PulseMiner.github
+      run: go build -o build/
 
     - name: Test
       run: go test
+      
+    - name: Deploy
+      uses: s0/git-publish-subdir-action@master
+      env:
+        REPO: self
+        BRANCH: build
+        FOLDER: build
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
