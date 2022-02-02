@@ -83,8 +83,7 @@ type Currency struct {
 		Mad, Mdl, Mga, Mkd, Mmk, Mnt, Mop, Mro, Mur float32
 		Mvr, Mwk, Mxn, Myr, Mzn, Nad, Ngn, Nio, Nok float32
 		Npr, Nzd, Omr, Pab, Pen, Pgk, Php, Pkr, Pln, Pyg, Qar, Ron, Rsd float32
-		Rub float32
-		Rwf, Sar, Sbd, Scr, Sdg, Sek float32
+		Rub, Rwf, Sar, Sbd, Scr, Sdg, Sek float32
 		Sgd, Shp, Sll, Sos, Srd, Std, Svc, Syp, Szl, Thb float32
 		Theta, Tjs, Tmt, Tnd, Top, Trx, Try, Ttd, Twd, Tzs float32
 		Uah, Ugx, Usd, Usdt float32
@@ -148,17 +147,22 @@ func main(){
 	*/
 
 	if _, err := os.Stat(defconfigfile); errors.Is(err, os.ErrNotExist) {
-		fmt.Printf("Welcome to PulseMiner confifuration menu!\n\n")
-		fmt.Printf("Setup\n")
+		fmt.Printf("Welcome to PulseMiner configuration menu!\n\n")
+		fmt.Printf("\n")
 
 		var usr, crn, dif, thr string
 		var fev int
-		
-		print("Your username: "); fmt.Scanf("%s",&usr)
-		print("Currency: "); fmt.Scanf("%s",&crn)
-		print("Difficulty: "); fmt.Scanf("%s",&dif)
-		print("Threads: "); fmt.Scanf("%s",&thr)
-		print("Print balance every (seconds): "); fmt.Scanf("%d",&fev)
+
+		for usr=="" {
+			print("Your username: "); fmt.Scanf("%s",&usr)
+		}
+		print("Choose your currency [RUB,UAH,CZK... or none]: "); fmt.Scanf("%s",&crn)
+		for dif!="low" && dif!="medium" && dif!="high" {
+			print("Choose difficulty [low,medium,high]: "); fmt.Scanf("%s",&dif)
+		}
+		print("Threads [or auto]: "); fmt.Scanf("%s",&thr)
+		print("Print balance every (seconds) [default: 45]: "); fmt.Scanf("%d",&fev)
+		if fev==0 {fev=45}
 
 		file, err2 := os.Create("config.json")
 		defer file.Close()
@@ -192,18 +196,22 @@ func main(){
 		}
 	}
 	if config.FeedEvery!=0 { feedevery = time.Duration(config.FeedEvery) }
+	if config.Difficulty!="" { difficulty = config.Difficulty }
 	
 	bannerw:=42
 	unlen:=14+len(username)
-	threadslen:=12+len(strconv.Itoa(threads))
 	currlen:=21+len(additconv)
+	threadslen:=12+len(strconv.Itoa(threads))
+	fevlen:=31+len(strconv.Itoa(int(feedevery)))
+	dlen:=15+len(difficulty)
 	print("------------------------------------------\n")
 	print("| PulseMiner - DUCO Miner written in Go  |\n")
 	print("|                                        |\n")
 	print("| Mining to: "+username+strings.Repeat(" ",bannerw-unlen)+"|\n")
+	print("| Currency to show: "+additconv+strings.Repeat(" ",bannerw-currlen)+"|\n")
 	print("| Threads: "+strconv.Itoa(threads)+strings.Repeat(" ",bannerw-threadslen)+"|\n")
-	print("| Cuurency to show: "+additconv+strings.Repeat(" ",bannerw-currlen)+"|\n")
-	print("| Show balance every: "+strconv.Itoa(int(feedevery))+" seconds"+strings.Repeat(" ",bannerw-currlen-9)+"|\n")
+	print("| Difficulty: "+strings.ToUpper(difficulty)+strings.Repeat(" ",bannerw-dlen)+"|\n")
+	print("| Show balance every: "+strconv.Itoa(int(feedevery))+" seconds"+strings.Repeat(" ",bannerw-fevlen)+"|\n")
 	print("------------------------------------------\n")
 
 
