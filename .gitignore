@@ -1,2 +1,8 @@
 /PulseMiner
-config.json
+/config.json
+
+*.exe
+*.test
+*.so
+*.dll
+*.out
