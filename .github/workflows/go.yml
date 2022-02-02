@@ -1,0 +1,60 @@
+name: Go
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Build (GitHub)
+      run: go build -o Pulseminer.github.default
+      
+    - name: Build (Windows x32)
+      run: GOOS=windows GOARCH=386 go build -o build/pulseminer_win32.exe
+
+    - name: Build (Windows x64)
+      run: GOOS=windows GOARCH=amd64 go build -o build/pulseminer_win64.exe
+
+    - name: Build (Linux ARM)
+      run: GOOS=linux GOARCH=arm go build -o build/pulseminer_linux_arm
+
+    - name: Build (Linux i386)
+      run: GOOS=linux GOARCH=386 go build -o build/pulseminer_linux_i386
+
+    - name: Build (Linux amd64)
+      run: GOOS=linux GOARCH=amd64 go build -o build/pulseminer_linux_amd64
+      
+    #- name: Build (Darwin i386)
+    #  run: GOOS=darwin GOARCH=386 go build -o build/pulseminer_darwin_i386
+
+    #- name: Build (Darwin amd64)
+    #  run: GOOS=darwin GOARCH=amd64 go build -o build/pulseminer_darwin_amd64
+
+    - name: Build (FreeBSD i386)
+      run: GOOS=freebsd GOARCH=386 go build -o build/pulseminer_freebsd_i386
+
+    - name: Build (FreeBSD amd64)
+      run: GOOS=freebsd GOARCH=amd64 go build -o build/pulseminer_freebsd_amd64
+
+    - name: Test
+      run: go test
+      
+    - name: Deploy
+      uses: s0/git-publish-subdir-action@master
+      env:
+        REPO: self
+        BRANCH: build
+        FOLDER: build
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
