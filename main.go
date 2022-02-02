@@ -117,6 +117,8 @@ var defconfigfile string = "config.json";
 var feedevery time.Duration;
 var difficulty string = "low";
 
+var oldbalance float32
+
 func main(){
 	feedevery = time.Duration(45);
 	threads = runtime.NumCPU()
@@ -242,29 +244,33 @@ func main(){
 	minerid:=rand.Int31()%32768
 
 
-	
+	// Main function
 	for i:=0; i<threads; i++{
 		go mine(pool.Ip,pool.Port,minerid,i,tothashrate)
 	}
+
+
+	print("[1] Preparing some data...\n")
 	for{
-		info, err := http.Get("https://server.duinocoin.com/"+
-							  "users/"+username)
-		if err!=nil{
-			log.Fatal(err)
-			time.Sleep(2*time.Second)
-			continue
-		}
+		info, err := http.Get("https://server.duinocoin.com/users/"+username)
+		if err!=nil{ log.Fatal(err); time.Sleep(2*time.Second); continue}
 		body, err := ioutil.ReadAll(info.Body)
-		if err!=nil{
-			log.Fatal(err)
-			time.Sleep(2*time.Second)
-			continue
-		}
+		if err!=nil{ log.Fatal(err); time.Sleep(2*time.Second); continue}
+		json.Unmarshal(body,&data)
+		oldbalance=data.Result.Balance.Balance
+		break
+	}
+	print("[2] Preparing some data...\n")
+	for{
+		info, err := http.Get("https://server.duinocoin.com/users/"+username)
+		if err!=nil{ log.Fatal(err); time.Sleep(2*time.Second); continue }
+		body, err := ioutil.ReadAll(info.Body)
+		if err!=nil{ log.Fatal(err); time.Sleep(2*time.Second); continue }
 		json.Unmarshal(body,&data)
 		balance:=data.Result.Balance.Balance
 
 		pricedata, err := getnet("https://server.duinocoin.com/statistics")
-		if err!=nil {log.Fatal(err)}
+		if err!=nil {log.Fatal(err); time.Sleep(2*time.Second);}
 		json.Unmarshal(pricedata, &priced)
 
 		if additconv!="none" {
@@ -277,7 +283,42 @@ func main(){
 						balance,
 						balance*priced.DUCO)
 		}
+		if balance-oldbalance>0 {
+			baldiffs:=((balance-oldbalance)/float32(feedevery))
+			fmt.Printf("[report] \033[32m+%.8f\033[0m DUCO\n",balance-oldbalance)
+			if additconv!="none" {
+				fmt.Printf("[report] Hourly: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD) %s\n",
+						   baldiffs*3600,
+						   baldiffs*3600*priced.DUCO,
+						   currconv(baldiffs*3600*priced.DUCO))
+
+				fmt.Printf("[report] Daily: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD) %s\n",
+						   baldiffs*3600*24,
+						   baldiffs*3600*24*priced.DUCO,
+						   currconv(baldiffs*3600*24*priced.DUCO))
+
+				// Just average 30.
+				fmt.Printf("[report] Monthly: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD) %s\n",
+						   baldiffs*3600*24*30,
+						   baldiffs*3600*24*30*priced.DUCO,
+						   currconv(baldiffs*3600*24*30*priced.DUCO))
+						   
+			}else{
+				fmt.Printf("[report] Hourly: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+						   baldiffs*3600,
+						   baldiffs*3600*priced.DUCO)
+	
+				fmt.Printf("[report] Daily: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+						   baldiffs*3600*24,
+						   baldiffs*3600*24*priced.DUCO)
+
+				fmt.Printf("[report] Monthly: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+						   baldiffs*3600*24*30,
+						   baldiffs*3600*24*30*priced.DUCO)
+			}
+		}
 		time.Sleep(feedevery*time.Second)
+		oldbalance=balance
 	}
 }
 
@@ -296,6 +337,12 @@ func sum(array []float64) float64 {
 }
 
 func currconv(value float32) string {
+	r:=fmt.Sprintf(" (%.5f %s)",
+				   currconvf(value), strings.ToUpper(additconv))
+	return r
+}
+
+func currconvf(value float32) float32 {
 	st1, err := getnet("https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.json")
 	if err!=nil{
 		log.Fatal(err)
@@ -304,10 +351,7 @@ func currconv(value float32) string {
 	r := reflect.ValueOf(currency.Usd)
 	res := reflect.Indirect(r).FieldByName(strings.Title(strings.ToLower(additconv)))
 
-	totalresp:=fmt.Sprintf(" (%.5f %s)",
-						   float32(res.Float())*value,
-						   strings.ToUpper(additconv))
-	return totalresp
+	return float32(res.Float())*value
 }
 
 func mine(ip string, port, minerid int32, cpuid int, thr []float64){
@@ -403,6 +447,7 @@ func writejobreq(con net.Conn) []byte {
 	con.Write([]byte("JOB,"+username+","+strings.ToUpper(difficulty)))
 	req := make([]byte,90)
 	con.Read(req)
+	time.Sleep(20*time.Millisecond) // Not affect on mining speed
 	return req
 }
 
