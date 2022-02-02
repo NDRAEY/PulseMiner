@@ -83,7 +83,6 @@ func main(){
 				os.Exit(1)
 			}
 		}
-		fmt.Printf("Len: %d, Current: %d\n",len(args),i)
 		if len(args)==0 {break}
 		if args[i]=="-h" {
 			print(os.Args[0]+` [-t THREADS] nickname`+"\n")
