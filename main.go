@@ -187,7 +187,13 @@ func main(){
 	json.Unmarshal(rawconfig,&config)
 
 	if config.Username!="" {username = config.Username}
-	if config.Currency!="" {additconv = config.Currency}
+	if config.Currency!="" {
+		if isinarray(getcurrs(),strings.Title(strings.ToLower(config.Currency))) {
+			additconv = config.Currency
+		}else{
+			fmt.Printf("Warning: Currency %s not found in list. Setting to none...\n",config.Currency)
+		}
+	}
 	if config.Threads!="" {
 		if config.Threads!="auto" {
 			th, err := strconv.Atoi(config.Threads)
@@ -218,13 +224,22 @@ func main(){
 	
 	print("\nGetting best pool...\n")
 	tothashrate := make([]float64,threads)
-	pooldata, err := getnet("https://server.duinocoin.com/getPool")
-	if err!=nil {print("Error getting pool! Press Ctrl-C to exit...\n"); for{}}
-	json.Unmarshal(pooldata,&pool)
-	fmt.Printf("Selected pool %s:%d\n",pool.Ip,pool.Port)
+
+	for {
+		pooldata, err := getnet("https://server.duinocoin.com/getPool")
+		if err!=nil {print("Error getting pool! Press Ctrl-C to exit...\n"); for{}}
+		json.Unmarshal(pooldata,&pool)
+		fmt.Printf("Selected pool %s:%d\n",pool.Ip,pool.Port)
+		if pool.Ip=="" {
+			fmt.Println("Warning: Received empty ip, retrying...")
+		}else{
+			break
+		}
+	}
+	
 	print("Connecting...\n")
 	rand.Seed(time.Now().UnixNano())
-	minerid:=rand.Int31()%1712
+	minerid:=rand.Int31()%32768
 
 
 	
@@ -235,10 +250,14 @@ func main(){
 		info, err := http.Get("https://server.duinocoin.com/"+
 							  "users/"+username)
 		if err!=nil{
+			log.Fatal(err)
+			time.Sleep(2*time.Second)
 			continue
 		}
 		body, err := ioutil.ReadAll(info.Body)
 		if err!=nil{
+			log.Fatal(err)
+			time.Sleep(2*time.Second)
 			continue
 		}
 		json.Unmarshal(body,&data)
@@ -407,4 +426,24 @@ func mkjsonentry(key string, value interface{}, cl int) string {
 		tstr+=","
 	}
 	return tstr
+}
+
+func getcurrs() []string {
+	exa := map[Currency]string{Currency{}:"Pulsemon-Digimon"}
+	raw := fmt.Sprintf("%+v",exa)
+	raw = raw[strings.Index(raw,"{")+1:]
+	raw = raw[strings.Index(raw,"{")+1:]
+	raw = raw[:strings.Index(raw,"}")]
+	spl := strings.Split(raw," ")
+	for idx, elm := range spl {
+		spl[idx] = strings.Split(elm,":")[0]
+	}
+	return spl
+}
+
+func isinarray(array []string, value string) bool {
+	for _, b := range array {
+		if b == value { return true }
+	}
+	return false
 }
