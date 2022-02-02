@@ -36,11 +36,11 @@ jobs:
     - name: Build (Linux amd64)
       run: GOOS=linux GOARCH=amd64 go build -o pulseminer_linux_amd64
       
-    - name: Build (Darwin i386)
-      run: GOOS=darwin GOARCH=386 go build -o pulseminer_darwin_i386
+    #- name: Build (Darwin i386)
+    #  run: GOOS=darwin GOARCH=386 go build -o pulseminer_darwin_i386
 
-    - name: Build (Darwin amd64)
-      run: GOOS=darwin GOARCH=amd64 go build -o pulseminer_darwin_amd64
+    #- name: Build (Darwin amd64)
+    #  run: GOOS=darwin GOARCH=amd64 go build -o pulseminer_darwin_amd64
 
     - name: Build (FreeBSD i386)
       run: GOOS=freebsd GOARCH=386 go build -o pulseminer_freebsd_i386
