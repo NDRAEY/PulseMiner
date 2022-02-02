@@ -159,8 +159,13 @@ func mine(ip string, port int32, minerid int64, cpuid int, thr []int){
 	conn.Read(ver)
 	//print("Version: "+string(ver)+"\n")
 	for {
-		job := strings.Split(string(writejobreq(conn)),",")
-		
+		job_ := string(writejobreq(conn))
+		job := strings.Split(job_,",")
+		if len(job)<3 {
+			fmt.Printf("Skipping job: %v\n",job)
+			//mine(ip,port,minerid,cpuid,thr)
+			continue
+		}
 		jh := job[0]
 		nh := job[1]
 		diff := strings.Replace(string(job[2]), "\n", "", -1)
@@ -170,7 +175,7 @@ func mine(ip string, port int32, minerid int64, cpuid int, thr []int){
 		nonce, hashrate, time := DecodeHash(jh,nh,int(diffi))
 		conn.Write([]byte(
 			strconv.Itoa(int(nonce))+","+
-			strconv.Itoa(int(hashrate))+",Unofficial GoLang Miner,pulsemon-go,,"+
+			strconv.Itoa(int(hashrate))+",Official PC Miner,pulsemon-go,,"+
 			strconv.Itoa(int(minerid))))
 		result := make([]byte,32)
 		conn.Read(result)
@@ -237,7 +242,7 @@ func DecodeHash(prev string,result string,diff int) (int, int, float64) {
 }
 
 func writejobreq(con net.Conn) []byte {
-	con.Write([]byte("JOB,ndraey,LOW,"))
+	con.Write([]byte("JOB,"+username+",LOW,"))
 	req := make([]byte,90)
 	con.Read(req)
 	return req
