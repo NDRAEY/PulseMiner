@@ -7,5 +7,8 @@ Type: `go build` to build miner.
 
 Run: `./PulseMiner -h` to see help message.
 
-#Or download
+Example: `./Pulseminer ndraey` mine to ndraey
+Example: `./Pulseminer -t 6 ndraey` use 6 threads
+
+# Or download
 Switch to build branch, select binary and download it!
