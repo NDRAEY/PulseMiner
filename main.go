@@ -97,8 +97,8 @@ type Currency struct {
 type Configuration struct {
 	Username string `json:"username"`
 	Currency string `json:"currency"`
+	Difficulty string `json:"diff"`
 	Threads  string `json:"threads"`
-	ThreadsInt int32 `json:"threads"`
 	FeedEvery int32 `json:"feed-every"`
 }
 
@@ -116,6 +116,7 @@ var config Configuration
 
 var defconfigfile string = "config.json";
 var feedevery time.Duration;
+var difficulty string = "low";
 
 func main(){
 	feedevery = time.Duration(45);
@@ -147,15 +148,28 @@ func main(){
 	*/
 
 	if _, err := os.Stat(defconfigfile); errors.Is(err, os.ErrNotExist) {
+		fmt.Printf("Welcome to PulseMiner confifuration menu!\n\n")
+		fmt.Printf("Setup\n")
+
+		var usr, crn, dif, thr string
+		var fev int
+		
+		print("Your username: "); fmt.Scanf("%s",&usr)
+		print("Currency: "); fmt.Scanf("%s",&crn)
+		print("Difficulty: "); fmt.Scanf("%s",&dif)
+		print("Threads: "); fmt.Scanf("%s",&thr)
+		print("Print balance every (seconds): "); fmt.Scanf("%d",&fev)
+
 		file, err2 := os.Create("config.json")
 		defer file.Close()
 		if err2!=nil{ log.Fatal(err) }
 		err3 := ioutil.WriteFile("config.json",
 								 []byte("{\n\t"+
-								 		`"username":"ndraey",`+"\n\t"+
-								 		`"currency":"none",`+"\n\t"+
-								 		`"threads":"auto",`+"\n\t"+
-								 		`"feed-every":45`+"\n"+
+								 		mkjsonentry("username",usr,1)+"\n\t"+
+								 		mkjsonentry("currency",crn,1)+"\n\t"+
+								 		mkjsonentry("diff",    dif,1)+"\n\t"+
+								 		mkjsonentry("threads",    thr,1)+"\n\t"+
+								 		mkjsonentry("feed-every", fev,0)+"\n"+
 								 		"}\n"),
 								 0644)
 		if err3!=nil { log.Fatal(err) }
@@ -172,7 +186,9 @@ func main(){
 	if config.Currency!="" {additconv = config.Currency}
 	if config.Threads!="" {
 		if config.Threads!="auto" {
-			threads = int(config.ThreadsInt)
+			th, err := strconv.Atoi(config.Threads)
+			if err!=nil { log.Fatal(err) }
+			threads = th
 		}
 	}
 	if config.FeedEvery!=0 { feedevery = time.Duration(config.FeedEvery) }
@@ -259,7 +275,7 @@ func currconv(value float32) string {
 	}
 	json.Unmarshal(st1,&currency)
 	r := reflect.ValueOf(currency.Usd)
-	res := reflect.Indirect(r).FieldByName(strings.Title(additconv))
+	res := reflect.Indirect(r).FieldByName(strings.Title(strings.ToLower(additconv)))
 
 	totalresp:=fmt.Sprintf(" (%.5f %s)",
 						   float32(res.Float())*value,
@@ -357,14 +373,30 @@ func DecodeHash(prev string,result string,diff int) (int, float64, float64) {
 }
 
 func writejobreq(con net.Conn) []byte {
-	con.Write([]byte("JOB,"+username+",LOW,"))
+	con.Write([]byte("JOB,"+username+","+strings.ToUpper(difficulty)))
 	req := make([]byte,90)
 	con.Read(req)
 	return req
 }
 
 func copystr(dst io.Writer, src io.Reader) {
-   if _, err := io.Copy(dst, src); err != nil {
-      log.Fatal(err)
-   }
+   if _, err := io.Copy(dst, src); err != nil { log.Fatal(err) }
+}
+
+func mkjsonentry(key string, value interface{}, cl int) string {
+	tstr := "\""+key+"\":"
+	switch value.(type) {
+		case int32:
+			tstr+=strconv.Itoa(value.(int))
+		case int64:
+			tstr+=strconv.Itoa(value.(int))
+		case int:
+			tstr+=strconv.Itoa(value.(int))
+		case string:
+			tstr+="\""+value.(string)+"\""
+	}
+	if cl==1 {
+		tstr+=","
+	}
+	return tstr
 }
