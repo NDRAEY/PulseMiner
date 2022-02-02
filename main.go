@@ -533,6 +533,10 @@ func mkjsonentry(key string, value interface{}, cl int) string {
 }
 
 func getcurrs() []string {
+	// Idk how to get all struct keys and made this stuff...
+	// It's just a simple parser turns a map with one object to string
+	// and finds keys
+
 	exa := map[Currency]string{Currency{}:"Pulsemon-Digimon"}
 	raw := fmt.Sprintf("%+v",exa)
 	raw = raw[strings.Index(raw,"{")+1:]

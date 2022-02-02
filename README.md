@@ -1,3 +1,5 @@
+<img src="assets/logo_copyright_apple05012.png"></img>
+
 # PulseMiner
 It's a DUCO coin miner written in pure Go.
 
@@ -5,11 +7,9 @@ Type: `git clone https://github.com/NDRAEY/PulseMiner -b main --single-branch` t
 
 Type: `go build` to build miner.
 
-Run: `./PulseMiner -h` to see help message.
+Run: `./PulseMiner` to run miner
 
-Example: `./Pulseminer ndraey` mine to ndraey
-
-Example: `./Pulseminer -t 6 ndraey` use 6 threads
+Note: first time program will ask username, currency, difficulty, report timeout for config.json
 
 # Or download
 Switch to build branch, select binary and download it!
