@@ -117,6 +117,7 @@ var defconfigfile string = "config.json";
 var feedevery time.Duration;
 var difficulty string = "low";
 
+var balance float32
 var oldbalance float32
 
 func main(){
@@ -247,6 +248,7 @@ func main(){
 	// Main function
 	for i:=0; i<threads; i++{
 		go mine(pool.Ip,pool.Port,minerid,i,tothashrate)
+		time.Sleep(7*time.Millisecond)
 	}
 
 
@@ -258,6 +260,7 @@ func main(){
 		if err!=nil{ log.Fatal(err); time.Sleep(2*time.Second); continue}
 		json.Unmarshal(body,&data)
 		oldbalance=data.Result.Balance.Balance
+		balance=oldbalance // avoiding report at startup
 		break
 	}
 	print("[2] Preparing some data...\n")
@@ -267,7 +270,7 @@ func main(){
 		body, err := ioutil.ReadAll(info.Body)
 		if err!=nil{ log.Fatal(err); time.Sleep(2*time.Second); continue }
 		json.Unmarshal(body,&data)
-		balance:=data.Result.Balance.Balance
+		balance=data.Result.Balance.Balance
 
 		pricedata, err := getnet("https://server.duinocoin.com/statistics")
 		if err!=nil {log.Fatal(err); time.Sleep(2*time.Second);}
@@ -402,11 +405,11 @@ func colorize(color int) string {
 }
 
 func mine(ip string, port, minerid int32, cpuid int, thr []float64){
-	print("Started...\n")
+	fmt.Printf("[cpu%d] Started...\n",cpuid)
 	conn, _ := net.Dial("tcp",ip+":"+strconv.Itoa(int(port)))
 	ver := make([]byte,10)
 	conn.Read(ver)
-	//print("Version: "+string(ver)+"\n")
+
 	for {
 		job_ := string(writejobreq(conn))
 		job := strings.Split(job_,",")
