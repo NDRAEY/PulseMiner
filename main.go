@@ -274,48 +274,85 @@ func main(){
 		json.Unmarshal(pricedata, &priced)
 
 		if additconv!="none" {
-			fmt.Printf("[feed] Balance: %.5f DUCO (≈%.5f USD)"+
+			fmt.Printf("[feed] Balance: %s%.5f%s DUCO (≈%s%.5f%s USD)"+
 						currconv(balance*priced.DUCO)+"\n",
+						colorize(93),
 						balance,
-						balance*priced.DUCO)
+						colorize(0),
+						colorize(93),
+						balance*priced.DUCO,
+						colorize(0))
 		}else{
-			fmt.Printf("[feed] Balance: %.5f DUCO (≈%.5f USD)\n",
+			fmt.Printf("[feed] Balance: %s%.5f%s DUCO (≈%s%.5f%s USD)\n",
+						colorize(93),
 						balance,
-						balance*priced.DUCO)
+						colorize(0),
+						colorize(93),
+						balance*priced.DUCO,
+						colorize(0))
 		}
 		if balance-oldbalance>0 {
 			baldiffs:=((balance-oldbalance)/float32(feedevery))
-			fmt.Printf("[report] \033[32m+%.8f\033[0m DUCO\n",balance-oldbalance)
+			print(strings.Repeat("=",65)+"\n")
+			fmt.Printf("[report] %s+%.8f%s DUCO\n",
+					   colorize(92),
+					   balance-oldbalance,
+					   colorize(0))
 			if additconv!="none" {
-				fmt.Printf("[report] Hourly: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD) %s\n",
+				fmt.Printf("[report] Hourly:  %s%.5f%s/day (≈%s%.5f%s USD) %s\n",
+						   colorize(92),
 						   baldiffs*3600,
+						   colorize(0),
+						   colorize(92),
 						   baldiffs*3600*priced.DUCO,
+						   colorize(0),
 						   currconv(baldiffs*3600*priced.DUCO))
 
-				fmt.Printf("[report] Daily: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD) %s\n",
+				fmt.Printf("[report] Daily:   %s%.5f%s/day (≈%s%.5f%s USD) %s\n",
+						   colorize(92),
 						   baldiffs*3600*24,
+						   colorize(0),
+						   colorize(92),
 						   baldiffs*3600*24*priced.DUCO,
+						   colorize(0),
 						   currconv(baldiffs*3600*24*priced.DUCO))
 
 				// Just average 30.
-				fmt.Printf("[report] Monthly: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD) %s\n",
+				fmt.Printf("[report] Monthly: %s%.5f%s/day (≈%s%.5f%s USD) %s\n",
+						   colorize(92),
 						   baldiffs*3600*24*30,
+						   colorize(0),
+						   colorize(92),
 						   baldiffs*3600*24*30*priced.DUCO,
+						   colorize(0),
 						   currconv(baldiffs*3600*24*30*priced.DUCO))
 						   
 			}else{
-				fmt.Printf("[report] Hourly: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+				fmt.Printf("[report] Hourly:  %s%.5f%s/day (≈%s%.5f%s USD)\n",
+						   colorize(92),
 						   baldiffs*3600,
-						   baldiffs*3600*priced.DUCO)
+						   colorize(0),
+						   colorize(92),
+						   baldiffs*3600*priced.DUCO,
+						   colorize(0))
 	
-				fmt.Printf("[report] Daily: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+				fmt.Printf("[report] Daily:   %s%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+						   colorize(92),
 						   baldiffs*3600*24,
-						   baldiffs*3600*24*priced.DUCO)
+						   colorize(0),
+						   colorize(92),
+						   baldiffs*3600*24*priced.DUCO,
+						   colorize(0))
 
-				fmt.Printf("[report] Monthly: \033[32m%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+				fmt.Printf("[report] Monthly: %s%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+						   colorize(92),
 						   baldiffs*3600*24*30,
-						   baldiffs*3600*24*30*priced.DUCO)
+						   colorize(0),
+						   colorize(92),
+						   baldiffs*3600*24*30*priced.DUCO,
+						   colorize(0))
 			}
+			print(strings.Repeat("=",65)+"\n")
 		}
 		time.Sleep(feedevery*time.Second)
 		oldbalance=balance
@@ -354,6 +391,16 @@ func currconvf(value float32) float32 {
 	return float32(res.Float())*value
 }
 
+func colorize(color int) string {
+	str := ""
+	if runtime.GOOS == "windows" {
+		str = "%ESC%["+strconv.Itoa(color)+"m"
+	}else{
+		str = "\033["+strconv.Itoa(color)+"m"
+	}
+	return str
+}
+
 func mine(ip string, port, minerid int32, cpuid int, thr []float64){
 	print("Started...\n")
 	conn, _ := net.Dial("tcp",ip+":"+strconv.Itoa(int(port)))
@@ -365,8 +412,12 @@ func mine(ip string, port, minerid int32, cpuid int, thr []float64){
 		job := strings.Split(job_,",")
 		if len(job)<3 {
 			fmt.Printf("Skipping job: %v\n",job)
-			//mine(ip,port,minerid,cpuid,thr)
-			continue
+			fmt.Printf("[cpu%d] %sError:%s Thread #%d got empty job! PulseMiner stopped this thread.\n",
+					   cpuid,
+					   colorize(91),
+					   colorize(0),
+					   cpuid)
+			break
 		}
 		jh := job[0]
 		nh := job[1]
