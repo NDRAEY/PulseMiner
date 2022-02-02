@@ -417,6 +417,11 @@ func mine(ip string, port, minerid int32, cpuid int, thr []float64){
 					   colorize(91),
 					   colorize(0),
 					   cpuid)
+			thr[cpuid]=0
+			fmt.Printf("[cpu%d] Trying to reload in 5s...\n",
+					   cpuid)
+			time.Sleep(5*time.Second)
+			mine(ip, port, minerid, cpuid, thr)
 			break
 		}
 		jh := job[0]
