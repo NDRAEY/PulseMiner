@@ -336,7 +336,7 @@ func main(){
 						   baldiffs*3600*priced.DUCO,
 						   colorize(0))
 	
-				fmt.Printf("[report] Daily:   %s%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+				fmt.Printf("[report] Daily:   %s%.5f%s/day (≈%s%.5f%s USD)\n",
 						   colorize(92),
 						   baldiffs*3600*24,
 						   colorize(0),
@@ -344,7 +344,7 @@ func main(){
 						   baldiffs*3600*24*priced.DUCO,
 						   colorize(0))
 
-				fmt.Printf("[report] Monthly: %s%.5f\033[0m/day (≈\033[32m%.5f\033[0m USD)\n",
+				fmt.Printf("[report] Monthly: %s%.5f%s/day (≈%s%.5f%s USD)\n",
 						   colorize(92),
 						   baldiffs*3600*24*30,
 						   colorize(0),
