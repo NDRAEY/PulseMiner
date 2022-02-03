@@ -19,6 +19,15 @@ jobs:
       with:
         go-version: 1.17
 
+    - name: Cleanup
+      run: rm build/* -rf
+      
+    - name: Report
+      run: |
+            ls -lh
+            ls build -lh
+            du -sh .
+
     - name: Build (GitHub)
       run: go build -o Pulseminer.github.default
       
