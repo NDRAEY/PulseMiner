@@ -9,6 +9,7 @@ on:
 jobs:
 
   build:
+    name: Build for Linux, Windows
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -38,68 +39,29 @@ jobs:
 
     - name: Build (Linux amd64)
       run: GOOS=linux GOARCH=amd64 go build -o build/pulseminer_linux_amd64
+        
+    - name: Build (JS/WASM)
+      run: GOOS=js GOARCH=wasm go build -o build/pulseminer_js_wasm
+
+    - name: Build (Windows arm64)
+      run: GOOS=windows GOARCH=arm64 go build -o build/pulseminer_arm64.exe
+
+    - name: Build (Windows ARM)
+      run: GOOS=windows GOARCH=arm go build -o build/pulseminer_arm.exe
+
+    - name: Build (FreeBSD i386)
+      run: GOOS=freebsd GOARCH=386 go build -o build/pulseminer_freebsd_i386
+
+    - name: Build (FreeBSD amd64)
+      run: GOOS=freebsd GOARCH=amd64 go build -o build/pulseminer_freebsd_amd64
 
     - name: Test
       run: go test
 
-  build-foreign:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        
-        - name: Set up Go
-          uses: actions/setup-go@v2
-          with:
-            go-version: 1.17
-        
-        - name: Build (JS/WASM)
-          run: GOOS=js GOARCH=wasm go build -o build/pulseminer_js_wasm
-  
-  build-windows-arm:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        
-        - name: Set up Go
-          uses: actions/setup-go@v2
-          with:
-            go-version: 1.17
-    
-        - name: Build (Windows arm64)
-          run: GOOS=windows GOARCH=arm64 go build -o build/pulseminer_arm64.exe
-
-        - name: Build (Windows ARM)
-          run: GOOS=windows GOARCH=arm go build -o build/pulseminer_arm.exe
-  
-  build-freebsd:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        
-        - name: Set up Go
-          uses: actions/setup-go@v2
-          with:
-            go-version: 1.17
-        
-        - name: Build (FreeBSD i386)
-          run: GOOS=freebsd GOARCH=386 go build -o build/pulseminer_freebsd_i386
-
-        - name: Build (FreeBSD amd64)
-          run: GOOS=freebsd GOARCH=amd64 go build -o build/pulseminer_freebsd_amd64
-  
-  deploy:
-      runs-on: ubuntu-latest
-      needs: [build, build-foreign, build-freebsd, build-windows-arm]
-      steps:
-        - uses: actions/checkout@v2
-        
-        - name: LS
-          run: ls -lh
-        
-        - name: Deploy
-          uses: s0/git-publish-subdir-action@master
-          env:
-            REPO: self
-            BRANCH: build
-            FOLDER: build
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Deploy
+      uses: s0/git-publish-subdir-action@master
+      env:
+        REPO: self
+        BRANCH: build
+        FOLDER: build
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
