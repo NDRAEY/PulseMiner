@@ -39,12 +39,6 @@ jobs:
     - name: Build (Linux amd64)
       run: GOOS=linux GOARCH=amd64 go build -o build/pulseminer_linux_amd64
 
-    - name: Build (FreeBSD i386)
-      run: GOOS=freebsd GOARCH=386 go build -o build/pulseminer_freebsd_i386
-
-    - name: Build (FreeBSD amd64)
-      run: GOOS=freebsd GOARCH=amd64 go build -o build/pulseminer_freebsd_amd64
-
     - name: Test
       run: go test
 
@@ -66,7 +60,23 @@ jobs:
 
         - name: Build (Windows ARM)
           run: GOOS=windows GOARCH=arm go build -o build/pulseminer_arm.exe
-      
+  
+  build-freebsd:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        
+        - name: Set up Go
+          uses: actions/setup-go@v2
+          with:
+            go-version: 1.17
+        
+        - name: Build (FreeBSD i386)
+          run: GOOS=freebsd GOARCH=386 go build -o build/pulseminer_freebsd_i386
+
+        - name: Build (FreeBSD amd64)
+          run: GOOS=freebsd GOARCH=amd64 go build -o build/pulseminer_freebsd_amd64
+  
   deploy:
       runs-on: ubuntu-latest
       needs: [build, build-foreign]
