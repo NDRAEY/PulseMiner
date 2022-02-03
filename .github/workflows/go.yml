@@ -51,11 +51,11 @@ jobs:
     - name: Build (Linux amd64)
       run: GOOS=linux GOARCH=amd64 go build -o build/pulseminer_linux_amd64
 
-    - name: Build (Android ARM)
-      run: GOOS=android GOARCH=arm go build -o build/pulseminer_android_arm
+    #- name: Build (Android ARM)
+    #  run: GOOS=android GOARCH=arm go build -o build/pulseminer_android_arm
 
-    - name: Build (Android ARM64)
-      run: GOOS=android GOARCH=arm64 go build -o build/pulseminer_android_arm64
+    #- name: Build (Android ARM64)
+    #  run: GOOS=android GOARCH=arm64 go build -o build/pulseminer_android_arm64
 
     - name: Build (Android i386)
       run: GOOS=android GOARCH=386 go build -o build/pulseminer_android_i386
