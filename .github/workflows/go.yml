@@ -57,12 +57,6 @@ jobs:
     #- name: Build (Android ARM64)
     #  run: GOOS=android GOARCH=arm64 go build -o build/pulseminer_android_arm64
 
-    - name: Build (Android i386)
-      run: GOOS=android GOARCH=386 go build -o build/pulseminer_android_i386
-
-    - name: Build (Android amd64)
-      run: GOOS=android GOARCH=amd64 go build -o build/pulseminer_android_amd64
-
     #- name: Build (Darwin amd64)
     #  run: GOOS=darwin GOARCH=amd64 go build -o build/pulseminer_darwin_amd64
 
@@ -72,16 +66,28 @@ jobs:
     - name: Build (FreeBSD amd64)
       run: GOOS=freebsd GOARCH=amd64 go build -o build/pulseminer_freebsd_amd64
 
-    - name: Build (FreeBSD amd64)
-      run: GOOS=js GOARCH=wasm go build -o build/pulseminer_js_wasm
-
     - name: Test
       run: go test
+
+  build-foreign:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Build (JS/WASM)
+          run: GOOS=js GOARCH=wasm go build -o build/pulseminer_js_wasm
+        
+        - name: Build (Android i386)
+          run: GOOS=android GOARCH=386 go build -o build/pulseminer_android_i386
+          
+        - name: Build (Android amd64)
+          run: GOOS=android GOARCH=amd64 go build -o build/pulseminer_android_amd64
       
-    - name: Deploy
-      uses: s0/git-publish-subdir-action@master
-      env:
-        REPO: self
-        BRANCH: build
-        FOLDER: build
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+      runs-on: ubuntu-latest
+      needs: [build, build-foreign]
+      steps:
+        - uses: s0/git-publish-subdir-action@master
+          env:
+            REPO: self
+            BRANCH: build
+            FOLDER: build
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
