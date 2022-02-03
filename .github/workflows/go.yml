@@ -9,7 +9,7 @@ on:
 jobs:
 
   build:
-    name: Build for Linux, Windows
+    name: Build for Linux, Windows and others...
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -18,6 +18,15 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+
+    - name: Cleanup
+      run: rm build/* -rfv
+      
+    - name: Report
+      run: |
+        ls -lh && \
+        ls build -lh && \
+        du -sh .
 
     - name: Build (GitHub)
       run: go build -o Pulseminer.github.default
@@ -39,15 +48,9 @@ jobs:
 
     - name: Build (Linux amd64)
       run: GOOS=linux GOARCH=amd64 go build -o build/pulseminer_linux_amd64
-        
-    - name: Build (JS/WASM)
-      run: GOOS=js GOARCH=wasm go build -o build/pulseminer_js_wasm
-
-    - name: Build (Windows arm64)
-      run: GOOS=windows GOARCH=arm64 go build -o build/pulseminer_arm64.exe
-
+      
     - name: Build (Windows ARM)
-      run: GOOS=windows GOARCH=arm go build -o build/pulseminer_arm.exe
+      run: GOOS=windows GOARCH=arm go build -o build/pulseminer_windows_arm.exe
 
     - name: Build (FreeBSD i386)
       run: GOOS=freebsd GOARCH=386 go build -o build/pulseminer_freebsd_i386
@@ -58,8 +61,14 @@ jobs:
     - name: Test
       run: go test
 
+    - name: Report
+      run: |
+            ls -lh && \
+            ls build -lh && \
+            du -sh . 
+
     - name: Deploy
-      uses: s0/git-publish-subdir-action@master
+      uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
         BRANCH: build
