@@ -54,6 +54,16 @@ jobs:
         
         - name: Build (JS/WASM)
           run: GOOS=js GOARCH=wasm go build -o build/pulseminer_js_wasm
+  
+  build-windows-arm:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        
+        - name: Set up Go
+          uses: actions/setup-go@v2
+          with:
+            go-version: 1.17
     
         - name: Build (Windows arm64)
           run: GOOS=windows GOARCH=arm64 go build -o build/pulseminer_arm64.exe
@@ -82,7 +92,12 @@ jobs:
       needs: [build, build-foreign]
       steps:
         - uses: actions/checkout@v2
+        
+        - name: LS
+          run: ls -lh
+        
         - uses: s0/git-publish-subdir-action@master
+        - name: Deploy
           env:
             REPO: self
             BRANCH: build
