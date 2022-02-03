@@ -119,6 +119,7 @@ var difficulty string = "low";
 
 var balance float32
 var oldbalance float32
+var version string = "v1.2"
 
 func main(){
 	feedevery = time.Duration(45);
@@ -157,14 +158,20 @@ func main(){
 		var fev int
 
 		for usr=="" {
-			print("Your username: "); fmt.Scanf("%s",&usr)
+			print("Your username: ");
+			fmt.Scanf("%s",&usr)
 		}
-		print("Choose your currency [RUB,UAH,CZK... or none]: "); fmt.Scanf("%s",&crn)
+		print("Choose your currency [RUB,UAH,CZK... or none]: ");
+		fmt.Scanf("%s",&crn)
 		for dif!="low" && dif!="medium" && dif!="high" {
-			print("Choose difficulty [low,medium,high]: "); fmt.Scanf("%s",&dif)
+			print("Choose difficulty [low,medium,high]: ");
+			fmt.Scanf("%s",&dif)
 		}
-		print("Threads [or auto]: "); fmt.Scanf("%s",&thr)
-		print("Print balance every (seconds) [default: 45]: "); fmt.Scanf("%d",&fev)
+		print("Threads [or auto]: ");
+		fmt.Scanf("%s",&thr)
+		print("Print balance every (seconds) [default: 45]: ");
+		fmt.Scanf("%d",&fev)
+		
 		if fev==0 {fev=45}
 
 		file, err2 := os.Create("config.json")
@@ -183,10 +190,7 @@ func main(){
 	}
 
 	rawconfig, err := ioutil.ReadFile(defconfigfile)
-	if err!=nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
+	if err!=nil { log.Fatal(err); os.Exit(1) }
 	json.Unmarshal(rawconfig,&config)
 
 	if config.Username!="" {username = config.Username}
@@ -207,21 +211,22 @@ func main(){
 	if config.FeedEvery!=0 { feedevery = time.Duration(config.FeedEvery) }
 	if config.Difficulty!="" { difficulty = config.Difficulty }
 	
-	bannerw:=42
+	bannerw:=47
 	unlen:=14+len(username)
 	currlen:=21+len(additconv)
 	threadslen:=12+len(strconv.Itoa(threads))
 	fevlen:=31+len(strconv.Itoa(int(feedevery)))
 	dlen:=15+len(difficulty)
-	print("------------------------------------------\n")
-	print("| PulseMiner - DUCO Miner written in Go  |\n")
-	print("|                                        |\n")
+	verlen:=26+len(version)
+	print("-----------------------------------------------\n")
+	print("| Welcome to PulseMiner "+version+strings.Repeat(" ",bannerw-verlen)+" |\n")
+	print("|                                             |\n")
 	print("| Mining to: "+username+strings.Repeat(" ",bannerw-unlen)+"|\n")
 	print("| Currency to show: "+additconv+strings.Repeat(" ",bannerw-currlen)+"|\n")
 	print("| Threads: "+strconv.Itoa(threads)+strings.Repeat(" ",bannerw-threadslen)+"|\n")
 	print("| Difficulty: "+strings.ToUpper(difficulty)+strings.Repeat(" ",bannerw-dlen)+"|\n")
 	print("| Show balance every: "+strconv.Itoa(int(feedevery))+" seconds"+strings.Repeat(" ",bannerw-fevlen)+"|\n")
-	print("------------------------------------------\n")
+	print("-----------------------------------------------\n")
 
 
 	
@@ -234,7 +239,9 @@ func main(){
 		json.Unmarshal(pooldata,&pool)
 		fmt.Printf("Selected pool %s:%d\n",pool.Ip,pool.Port)
 		if pool.Ip=="" {
-			fmt.Println("Warning: Received empty ip, retrying...")
+			fmt.Printf("%sWarning:%s Received empty ip, retrying...\n",
+						colorize(93),
+						colorize(0))
 		}else{
 			break
 		}
@@ -242,13 +249,13 @@ func main(){
 	
 	print("Connecting...\n")
 	rand.Seed(time.Now().UnixNano())
-	minerid:=rand.Int31()%32768
+	minerid:=rand.Int31()%32768*2
 
 
 	// Main function
 	for i:=0; i<threads; i++{
 		go mine(pool.Ip,pool.Port,minerid,i,tothashrate)
-		time.Sleep(7*time.Millisecond)
+		time.Sleep(10*time.Millisecond)
 	}
 
 
