@@ -89,7 +89,7 @@ jobs:
   
   deploy:
       runs-on: ubuntu-latest
-      needs: [build, build-foreign]
+      needs: [build, build-foreign, build-freebsd, build-windows-arm]
       steps:
         - uses: actions/checkout@v2
         
