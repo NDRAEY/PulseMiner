@@ -397,7 +397,7 @@ func currconvf(value float32) float32 {
 func colorize(color int) string {
 	str := ""
 	if runtime.GOOS == "windows" {
-		str = "%ESC%["+strconv.Itoa(color)+"m"
+		str = "\x1b["+strconv.Itoa(color)+"m"
 	}else{
 		str = "\033["+strconv.Itoa(color)+"m"
 	}
