@@ -9,7 +9,7 @@ on:
 jobs:
 
   build:
-    name: Build for Linux, Windows
+    name: Build for Linux, Windows and others...
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -24,8 +24,8 @@ jobs:
       
     - name: Report
       run: |
-            ls -lh
-            ls build -lh
+            ls -lh \
+            ls build -lh \
             du -sh .
 
     - name: Build (GitHub)
@@ -48,13 +48,7 @@ jobs:
 
     - name: Build (Linux amd64)
       run: GOOS=linux GOARCH=amd64 go build -o build/pulseminer_linux_amd64
-        
-    #- name: Build (JS/WASM)
-    #  run: GOOS=js GOARCH=wasm go build -o build/pulseminer_js_wasm
-
-    #- name: Build (Windows arm64)
-    #  run: GOOS=windows GOARCH=arm64 go build -o build/pulseminer_windows_arm64.exe
-
+      
     - name: Build (Windows ARM)
       run: GOOS=windows GOARCH=arm go build -o build/pulseminer_windows_arm.exe
 
@@ -69,9 +63,9 @@ jobs:
 
     - name: Report
       run: |
-            ls -lh
-            ls build -lh
-            du -sh .
+            ls -lh \
+            ls build -lh \
+            du -sh . 
 
     - name: Deploy
       uses: s0/git-publish-subdir-action@master
