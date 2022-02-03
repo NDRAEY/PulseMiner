@@ -16,6 +16,7 @@ import "encoding/json"
 import "reflect"
 import "runtime"
 import "errors"
+import "github.com/NDRAEY/Pradz"
 
 type Balance struct {
 	Result struct {
@@ -210,7 +211,8 @@ func main(){
 	}
 	if config.FeedEvery!=0 { feedevery = time.Duration(config.FeedEvery) }
 	if config.Difficulty!="" { difficulty = config.Difficulty }
-	
+
+	/*
 	bannerw:=47
 	unlen:=14+len(username)
 	currlen:=21+len(additconv)
@@ -227,7 +229,19 @@ func main(){
 	print("| Difficulty: "+strings.ToUpper(difficulty)+strings.Repeat(" ",bannerw-dlen)+"|\n")
 	print("| Show balance every: "+strconv.Itoa(int(feedevery))+" seconds"+strings.Repeat(" ",bannerw-fevlen)+"|\n")
 	print("-----------------------------------------------\n")
+	*/
 
+	table := Pradz.PradzTable{}
+	table.Init()
+	table.AddElement("Welcome to PulseMiner "+version+"!")
+	table.AddElement("")
+	table.AddElement("Mining to: "+username)
+	table.AddElement("Currency to show: "+additconv)
+	table.AddElement("Threads: "+strconv.Itoa(threads))
+	table.AddElement("Difficulty: "+strings.ToUpper(difficulty))
+	table.AddElement("Show balance every: "+strconv.Itoa(int(feedevery))+" seconds")
+	fmt.Printf("%s\n",table.Render())
+	
 
 	
 	print("\nGetting best pool...\n")
