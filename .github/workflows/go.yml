@@ -24,9 +24,9 @@ jobs:
       
     - name: Report
       run: |
-            ls -lh \
-            ls build -lh \
-            du -sh .
+        ls -lh && \
+        ls build -lh && \
+        du -sh .
 
     - name: Build (GitHub)
       run: go build -o Pulseminer.github.default
@@ -63,8 +63,8 @@ jobs:
 
     - name: Report
       run: |
-            ls -lh \
-            ls build -lh \
+            ls -lh && \
+            ls build -lh && \
             du -sh . 
 
     - name: Deploy
