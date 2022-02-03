@@ -364,10 +364,13 @@ func main(){
 
 func getnet(url string) ([]byte, error) {
 	info, err := http.Get(url)
-	if err!=nil { log.Fatal(err); } else {
+	if err!=nil { 
+		log.Fatal(err);
+		return []byte(""), err
+	} else {
 		body, err := ioutil.ReadAll(info.Body)
+		return body, err
 	}
-	return body, err
 } 
 
 func sum(array []float64) float64 {
