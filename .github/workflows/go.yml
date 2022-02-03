@@ -96,8 +96,8 @@ jobs:
         - name: LS
           run: ls -lh
         
-        - uses: s0/git-publish-subdir-action@master
         - name: Deploy
+          uses: s0/git-publish-subdir-action@master
           env:
             REPO: self
             BRANCH: build
