@@ -1,7 +1,7 @@
 <img src="assets/logo_copyright_apple05012.png"></img>
 
 # PulseMiner
-It's a DUCO coin miner written in pure Go.
+It's a DUCO coin miner written in pure GO.
 
 Type: `git clone https://github.com/NDRAEY/PulseMiner -b main --single-branch` to clone this repository
 
