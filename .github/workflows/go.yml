@@ -27,17 +27,41 @@ jobs:
     - name: Build (Windows x64)
       run: GOOS=windows GOARCH=amd64 go build -o build/pulseminer_win64.exe
 
+    - name: Build (Windows arm64)
+      run: GOOS=windows GOARCH=arm64 go build -o build/pulseminer_arm64.exe
+
+    - name: Build (Windows ARM)
+      run: GOOS=windows GOARCH=arm go build -o build/pulseminer_arm.exe
+
     - name: Build (Linux ARM)
       run: GOOS=linux GOARCH=arm go build -o build/pulseminer_linux_arm
+
+    - name: Build (Linux ARM64)
+      run: GOOS=linux GOARCH=arm64 go build -o build/pulseminer_linux_arm64
+
+    #- name: Build (Linux ARM-BE)
+    #  run: GOOS=linux GOARCH=armbe go build -o build/pulseminer_linux_armbe
+
+    #- name: Build (Linux ARM64-BE)
+    #  run: GOOS=linux GOARCH=arm64be go build -o build/pulseminer_linux_arm64be
 
     - name: Build (Linux i386)
       run: GOOS=linux GOARCH=386 go build -o build/pulseminer_linux_i386
 
     - name: Build (Linux amd64)
       run: GOOS=linux GOARCH=amd64 go build -o build/pulseminer_linux_amd64
-      
-    #- name: Build (Darwin i386)
-    #  run: GOOS=darwin GOARCH=386 go build -o build/pulseminer_darwin_i386
+
+    - name: Build (Android ARM)
+      run: GOOS=android GOARCH=arm go build -o build/pulseminer_android_arm
+
+    - name: Build (Android ARM64)
+      run: GOOS=android GOARCH=arm64 go build -o build/pulseminer_android_arm64
+
+    - name: Build (Android i386)
+      run: GOOS=android GOARCH=386 go build -o build/pulseminer_android_i386
+
+    - name: Build (Android amd64)
+      run: GOOS=android GOARCH=amd64 go build -o build/pulseminer_android_amd64
 
     #- name: Build (Darwin amd64)
     #  run: GOOS=darwin GOARCH=amd64 go build -o build/pulseminer_darwin_amd64
@@ -47,6 +71,9 @@ jobs:
 
     - name: Build (FreeBSD amd64)
       run: GOOS=freebsd GOARCH=amd64 go build -o build/pulseminer_freebsd_amd64
+
+    - name: Build (FreeBSD amd64)
+      run: GOOS=js GOARCH=wasm go build -o build/pulseminer_js_wasm
 
     - name: Test
       run: go test
