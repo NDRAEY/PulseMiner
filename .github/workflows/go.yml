@@ -27,12 +27,6 @@ jobs:
     - name: Build (Windows x64)
       run: GOOS=windows GOARCH=amd64 go build -o build/pulseminer_win64.exe
 
-    - name: Build (Windows arm64)
-      run: GOOS=windows GOARCH=arm64 go build -o build/pulseminer_arm64.exe
-
-    - name: Build (Windows ARM)
-      run: GOOS=windows GOARCH=arm go build -o build/pulseminer_arm.exe
-
     - name: Build (Linux ARM)
       run: GOOS=linux GOARCH=arm go build -o build/pulseminer_linux_arm
 
@@ -84,9 +78,15 @@ jobs:
         
         - name: Build (Android i386)
           run: GOOS=android GOARCH=386 go build -o build/pulseminer_android_i386
-          
-        - name: Build (Android amd64)
-          run: GOOS=android GOARCH=amd64 go build -o build/pulseminer_android_amd64
+    
+        - name: Build (Windows arm64)
+          run: GOOS=windows GOARCH=arm64 go build -o build/pulseminer_arm64.exe
+
+        - name: Build (Windows ARM)
+          run: GOOS=windows GOARCH=arm go build -o build/pulseminer_arm.exe
+
+        #- name: Build (Android amd64)
+        #  run: GOOS=android GOARCH=amd64 go build -o build/pulseminer_android_amd64
       
   deploy:
       runs-on: ubuntu-latest
