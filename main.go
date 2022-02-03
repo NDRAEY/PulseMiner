@@ -364,7 +364,9 @@ func main(){
 
 func getnet(url string) ([]byte, error) {
 	info, err := http.Get(url)
-	body, err := ioutil.ReadAll(info.Body)
+	if err!=nil { log.Fatal(err); } else {
+		body, err := ioutil.ReadAll(info.Body)
+	}
 	return body, err
 } 
 
