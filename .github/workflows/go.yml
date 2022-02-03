@@ -20,7 +20,7 @@ jobs:
         go-version: 1.17
 
     - name: Cleanup
-      run: rm build/* -rf
+      run: rm build/* -rfv
       
     - name: Report
       run: |
