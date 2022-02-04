@@ -3,6 +3,11 @@
 # PulseMiner
 It's a DUCO coin miner written in pure GO.
 
+Feautres:
+	- [X] Balance in report
+	- [X] Currency conversion (including other cryptocurrency)
+	- [X] DUCO per hour/day/month calculation
+
 # Build
 Type: `git clone https://github.com/NDRAEY/PulseMiner -b main --single-branch` to clone this repository
 
