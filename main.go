@@ -20,6 +20,7 @@ import (
 	"github.com/NDRAEY/Pradz"
 )
 
+
 type Balance struct {
 	Result struct {
 		Balance struct {
@@ -379,6 +380,15 @@ func main() {
 					colorize(0),
 					currconv(baldiffs*3600*24*priced.DUCO))
 
+				fmt.Printf("[report] Weekly:   %s%.5f%s/wk (≈%s%.5f%s USD) %s\n",
+					colorize(92),
+					baldiffs*3600*24*7,
+					colorize(0),
+					colorize(92),
+					baldiffs*3600*24*7*priced.DUCO,
+					colorize(0),
+					currconv(baldiffs*3600*24*7*priced.DUCO))
+
 				// Just average 30.
 				fmt.Printf("[report] Monthly: %s%.5f%s/mon (≈%s%.5f%s USD) %s\n",
 					colorize(92),
@@ -404,6 +414,14 @@ func main() {
 					colorize(0),
 					colorize(92),
 					baldiffs*3600*24*priced.DUCO,
+					colorize(0))
+
+				fmt.Printf("[report] Weekly:   %s%.5f%s/wk (≈%s%.5f%s USD)\n",
+					colorize(92),
+					baldiffs*3600*24*7,
+					colorize(0),
+					colorize(92),
+					baldiffs*3600*24*7*priced.DUCO,
 					colorize(0))
 
 				fmt.Printf("[report] Monthly: %s%.5f%s/mon (≈%s%.5f%s USD)\n",
@@ -478,7 +496,6 @@ func mine(ip string, port, minerid int32, cpuid int, thr []float64) {
 		job_ := string(writejobreq(conn))
 		job := strings.Split(job_, ",")
 		if len(job) < 3 {
-			fmt.Printf("Skipping job: %v\n", job)
 			fmt.Printf("[cpu%d] %sError:%s Thread #%d got empty job! PulseMiner stopped this thread.\n",
 				cpuid,
 				colorize(91),
@@ -503,8 +520,9 @@ func mine(ip string, port, minerid int32, cpuid int, thr []float64) {
 		nonce, hashrate, time := DecodeHash(jh, nh, int(diffi))
 		conn.Write([]byte(
 			strconv.Itoa(int(nonce)) + "," +
-				strconv.Itoa(int(hashrate)) + ",Official PC Miner,pulsemon-go,," +
-				strconv.Itoa(int(minerid))))
+			strconv.Itoa(int(hashrate)) + ",Official PC Miner,pulsemon-go,," +
+			strconv.Itoa(int(minerid))))
+		
 		result := make([]byte, 32)
 		conn.Read(result)
 		thr[cpuid] = hashrate
@@ -573,6 +591,7 @@ func DecodeHash(prev string, result string, diff int) (int, float64, float64) {
 
 func writejobreq(con net.Conn) []byte {
 	con.Write([]byte("JOB," + username + "," + strings.ToUpper(difficulty)))
+	//con.Write([]byte("JOB," + username + ",AVR"))
 	req := make([]byte, 90)
 	con.Read(req)
 	time.Sleep(20 * time.Millisecond) // Not affect on mining speed
