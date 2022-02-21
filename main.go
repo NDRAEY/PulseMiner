@@ -20,7 +20,6 @@ import (
 	"github.com/NDRAEY/Pradz"
 )
 
-
 type Balance struct {
 	Result struct {
 		Balance struct {
