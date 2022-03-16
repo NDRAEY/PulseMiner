@@ -571,7 +571,7 @@ func convr(num float64) string {
 func DecodeHash(prev string, result string, diff int) (int, float64, float64) {
 	i := int(0)
 	hr := float64(0)
-	tm := float64(gettime() / 1000)
+	tm := float64(gettime()) / float64(1000)
 	tmm := float64(0)
 	for i = 0; i < (100*diff + 1); i++ {
 		hash := sha1.Sum([]byte(prev + strconv.Itoa(i)))
